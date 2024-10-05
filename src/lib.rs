@@ -3,11 +3,20 @@
 use rand::Rng;
 
 const PROPERTIES: [Property; 28] = [Property::NotBought(PropertyInner {
-    color: todo!(),
-    price: todo!(),
-    mortgage: todo!(),
-    building_cost: todo!(),
-    rent: todo!(),
+    name: "Mediterranean Avenue",
+    color: PropertyColor::Brown,
+    price: Money(60),
+    mortgage: Money(30),
+    building_cost: Money(50),
+    rent: [
+        Money(2),
+        Money(4),
+        Money(10),
+        Money(30),
+        Money(90),
+        Money(160),
+        Money(250),
+    ],
 }); 28];
 
 /// Total number of houses in the game.
@@ -42,7 +51,7 @@ struct Player<'a> {
     name: String,
 
     /// The properties owned by the player.
-    properties: Vec<&'a Property>,
+    properties: Vec<&'a Property<'a>>,
 
     /// The amount of money the player has.
     money: Money,
@@ -66,7 +75,7 @@ impl<'a> Player<'a> {
 #[derive(Debug)]
 struct Game<'a> {
     /// All the properties in the game.
-    properties: [Property; 28],
+    properties: [Property<'a>; 28],
 
     /// All players in the game.
     players: Vec<Player<'a>>,
@@ -140,27 +149,30 @@ impl<'a> Game<'a> {
 
 /// A property that can be owned by players.
 #[derive(Debug, Clone, Copy)]
-enum Property {
+enum Property<'a> {
     /// The initial state of all properties; all properties can be bought at the start of the
     /// game.
-    NotBought(PropertyInner),
+    NotBought(PropertyInner<'a>),
 
     /// The property is bought and owned by a player.
-    Bought(PropertyInner),
+    Bought(PropertyInner<'a>),
 
     /// The property is mortgaged to the bank.
     ///
     /// The owning player can't collect rent on a mortgaged property.
-    Mortgaged(PropertyInner),
+    Mortgaged(PropertyInner<'a>),
 
     /// The property is up for auction and the players must bid on it; the highest bidder buys the
     /// property from the bank.
-    Auctioned(PropertyInner),
+    Auctioned(PropertyInner<'a>),
 }
 
 /// Contains the various prices (cost, rent, mortgage) and the color of a property.
 #[derive(Debug, Clone, Copy)]
-struct PropertyInner {
+struct PropertyInner<'a> {
+    /// The name of the property.
+    name: &'a str,
+
     /// The color/group/type of the property (i.e. orange, utility, etc.).
     color: PropertyColor,
 
@@ -181,8 +193,8 @@ struct PropertyInner {
     ///
     /// # Note
     /// The array is laid out in the following order:
-    /// `Base, 1 House, 2 House, 3 House, 4 House, Hotel`
-    rent: [Money; 6],
+    /// `Base, Monopoly, 1 House, 2 House, 3 House, 4 House, Hotel`
+    rent: [Money; 7],
 }
 
 /// The various types/colors of properties.
