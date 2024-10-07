@@ -8,7 +8,7 @@ pub(crate) enum PropertyState {
     NotBought,
 
     /// The property is bought and owned by a player.
-    Bought,
+    Bought(usize),
 
     /// The property is mortgaged to the bank.
     ///
@@ -47,8 +47,22 @@ pub(crate) struct Property<'a> {
     /// `Base, Monopoly, 1 House, 2 House, 3 House, 4 House, Hotel`
     pub(crate) rent: [Money; 7],
 
+    /// The current rent state of the property
+    pub(crate) rent_state: RentType,
+
     /// The current state of the property.
     pub(crate) state: PropertyState,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum RentType {
+    Base = 0,
+    Monopoly,
+    House1,
+    House2,
+    House3,
+    House4,
+    Hotel,
 }
 
 /// The various types/colors of properties.
@@ -82,5 +96,6 @@ pub(crate) const PROPERTIES: [Property; 28] = [Property {
         Money(160),
         Money(250),
     ],
+    rent_state: RentType::Base,
     state: PropertyState::NotBought,
 }; 28];

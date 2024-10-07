@@ -5,12 +5,12 @@ use crate::{
 
 /// A player that makes actions in the game.
 #[derive(Debug)]
-pub(crate) struct Player<'a> {
+pub(crate) struct Player {
     /// Player's name/id.
     pub(crate) name: String,
 
     /// The properties owned by the player.
-    pub(crate) properties: Vec<&'a Property<'a>>,
+    pub(crate) properties: Vec<usize>,
 
     /// The amount of money the player has.
     pub(crate) money: Money,
@@ -24,7 +24,7 @@ pub(crate) struct Player<'a> {
     pub(crate) position: usize,
 }
 
-impl<'a> Player<'a> {
+impl Player {
     pub(crate) fn new(name: String) -> Self {
         Self {
             name,

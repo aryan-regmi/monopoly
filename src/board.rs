@@ -37,4 +37,8 @@ pub(crate) enum BoardCell {
     IncomeTax(Money),
 }
 
-pub(crate) const BOARD: [BoardCell; 41] = [BoardCell::Go; 41];
+/// THe size of the board.
+pub(crate) const BOARD_SIZE: usize = 40;
+
+/// The actual game board.
+pub(crate) const BOARD: [BoardCell; BOARD_SIZE] = [BoardCell::Go; BOARD_SIZE];

@@ -1,4 +1,4 @@
-use std::ops::AddAssign;
+use std::ops::{AddAssign, SubAssign};
 
 /// Represents a six-sided die.
 #[derive(Debug)]
@@ -16,8 +16,14 @@ impl D6 {
 }
 
 /// Represents money and prices.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
 pub(crate) struct Money(pub(crate) usize);
+
+impl SubAssign for Money {
+    fn sub_assign(&mut self, rhs: Self) {
+        self.0 = self.0 - rhs.0
+    }
+}
 
 impl AddAssign for Money {
     fn add_assign(&mut self, rhs: Self) {
