@@ -14,10 +14,6 @@ pub(crate) enum Property<'a> {
     ///
     /// The owning player can't collect rent on a mortgaged property.
     Mortgaged(PropertyInner<'a>),
-
-    /// The property is up for auction and the players must bid on it; the highest bidder buys the
-    /// property from the bank.
-    Auctioned(PropertyInner<'a>),
 }
 
 /// Contains the various prices (cost, rent, mortgage) and the color of a property.

@@ -82,7 +82,6 @@ impl<'a> Game<'a> {
                                 //  - Handle if not enough money (auction)/sell or mortgage properties
                             }
                             Property::Mortgaged(property_inner) => continue,
-                            Property::Auctioned(property_inner) => {}
                         }
                     }
                     BoardCell::CommunityChest => todo!(), // TODO: RNG from set list
@@ -159,16 +158,5 @@ impl<'a> Game<'a> {
             next_pos = 0;
         }
         next_pos
-    }
-
-    /// Auctions a property by allowing the player to make a bid on it, and returns the current
-    /// highest bid.
-    fn run_auction(
-        prop_idx: usize,
-        properties: &mut [Property],
-        player: &mut Player,
-    ) -> (&'a mut Player<'a>, Money) {
-        // TODO: Implement!
-        todo!()
     }
 }
