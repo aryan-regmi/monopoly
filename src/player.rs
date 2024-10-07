@@ -17,6 +17,11 @@ pub(crate) struct Player<'a> {
 
     /// The value of the last dice rolled by the player.
     pub(crate) last_dice: (D6, D6),
+
+    /// Current position on the board.
+    ///
+    /// This is an index of the `board::BOARD` array.
+    pub(crate) position: usize,
 }
 
 impl<'a> Player<'a> {
@@ -26,6 +31,7 @@ impl<'a> Player<'a> {
             properties: vec![],
             money: Money(1500),
             last_dice: (D6(1), D6(1)),
+            position: 0,
         }
     }
 }

@@ -1,9 +1,11 @@
 #![allow(unused)]
 
+mod board;
 mod player;
 mod properties;
 mod utils;
 
+use board::{BoardCell, BOARD};
 use player::Player;
 use properties::{Property, PropertyColor, PropertyInner, PROPERTIES};
 use rand::Rng;
@@ -15,14 +17,25 @@ const NUM_HOUSES: u8 = 32;
 /// Total number of hotels in the game.
 const NUM_HOTLES: u8 = 12;
 
+/// Total number of properties in the game.
+const NUM_PROPERTIES: u8 = 28;
+
+/// Total number of locations/board cells in the game.
+const NUM_LOCATIONS: u8 = 41;
+
 /// Contains the game state and logic.
 #[derive(Debug)]
 struct Game<'a> {
     /// All the properties in the game.
-    properties: [Property<'a>; 28],
+    properties: [Property<'a>; NUM_PROPERTIES as usize],
 
     /// All players in the game.
     players: Vec<Player<'a>>,
+
+    /// Represents the game board.
+    ///
+    /// 41 cells for each position in the game.
+    board: [BoardCell; NUM_LOCATIONS as usize],
 }
 
 impl<'a> Game<'a> {
@@ -31,6 +44,7 @@ impl<'a> Game<'a> {
         Self {
             players,
             properties: PROPERTIES,
+            board: BOARD,
         }
     }
 
@@ -45,8 +59,26 @@ impl<'a> Game<'a> {
                 // Roll die to determine next location of player
                 player.last_dice = Self::roll_dice();
 
+                // Move to rolled location
+                let new_position = Self::board_index_from_dice(player.position, &player.last_dice);
+                player.position = new_position;
+
+                // TODO: Determine type of location
+                match self.board[new_position] {
+                    BoardCell::Go => {
+                        player.money += Money(200);
+                    }
+                    BoardCell::Property(_) => todo!(),
+                    BoardCell::CommunityChest => todo!(),
+                    BoardCell::Chance => todo!(),
+                    BoardCell::VisitingJail => todo!(),
+                    BoardCell::Jail => todo!(),
+                    BoardCell::FreeParking(money) => todo!(),
+                    BoardCell::GoToJail => todo!(),
+                    BoardCell::IncomeTax(money) => todo!(),
+                }
+
                 // TODO: Take possible actions
-                //  - Move to rolled location
                 //  - Determine status of the property
                 //      - Buy if `NotBought`
                 //          - Auction if not enough money
@@ -54,6 +86,7 @@ impl<'a> Game<'a> {
                 //      - Pay rent if `Bought`
 
                 // TODO: Reroll if double was rolled
+                //  - 3 doubles in a row = jail
             }
         }
     }
@@ -88,5 +121,19 @@ impl<'a> Game<'a> {
     /// Check is a double was rolled (same value on both die).
     fn dice_is_double(dice: &(D6, D6)) -> bool {
         dice.0 .0 == dice.1 .0
+    }
+
+    /// Gets the index in the `board` array from a given dice roll.
+    ///
+    /// # Note
+    /// `curr_idx` is the current position of the **player**.
+    fn board_index_from_dice(curr_position: usize, dice: &(D6, D6)) -> usize {
+        // Add dice total to curr_position, clamped by total number of cells in the board
+        let dice_total = Self::total_dice(dice);
+        let mut next_pos = curr_position + dice_total as usize;
+        if next_pos >= NUM_LOCATIONS as usize {
+            next_pos = 0;
+        }
+        next_pos
     }
 }

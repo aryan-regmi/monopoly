@@ -1,3 +1,5 @@
+use std::ops::AddAssign;
+
 /// Represents a six-sided die.
 #[derive(Debug)]
 pub(crate) struct D6(pub(crate) u8);
@@ -16,3 +18,9 @@ impl D6 {
 /// Represents money and prices.
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct Money(pub(crate) usize);
+
+impl AddAssign for Money {
+    fn add_assign(&mut self, rhs: Self) {
+        self.0 = self.0 + rhs.0
+    }
+}
