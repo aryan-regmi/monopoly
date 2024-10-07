@@ -7,7 +7,7 @@ mod utils;
 
 use board::{BoardCell, BOARD};
 use player::Player;
-use properties::{Property, PropertyColor, PropertyInner, PROPERTIES};
+use properties::{Property, PropertyColor, PropertyState, PROPERTIES};
 use rand::Rng;
 use utils::{Money, D6};
 
@@ -48,13 +48,14 @@ impl<'a> Game<'a> {
         }
     }
 
-    /// Starts the game.
-    fn start(&mut self) {
+    /// Starts and runs/plays the game.
+    fn run(&mut self) {
         self.determine_player_order();
 
         // Main game loop
         let mut game_over = false;
         while game_over == false {
+            let mut auction: Option<&mut Property> = None;
             for player in &mut self.players {
                 // Roll die to determine next location of player
                 player.last_dice = Self::roll_dice();
@@ -69,19 +70,19 @@ impl<'a> Game<'a> {
                         player.money += Money(200);
                     }
                     BoardCell::Property(prop_idx) => {
-                        let property = self.properties[prop_idx];
-
-                        match property {
-                            Property::NotBought(prop) => {
+                        let property = &mut self.properties[prop_idx];
+                        match property.state {
+                            PropertyState::NotBought => {
                                 // TODO: Buy if the property is still for sale
                                 //  - Handle if not enough money (auction)/sell or mortgage properties
                             }
 
-                            Property::Bought(property_inner) => {
+                            PropertyState::Bought => {
                                 // TODO: Pay rent
                                 //  - Handle if not enough money (auction)/sell or mortgage properties
                             }
-                            Property::Mortgaged(property_inner) => continue,
+                            PropertyState::Mortgaged => continue, // Do nothing if property is
+                                                                  // mortgaged
                         }
                     }
                     BoardCell::CommunityChest => todo!(), // TODO: RNG from set list
@@ -111,6 +112,16 @@ impl<'a> Game<'a> {
                 // TODO: Reroll if double was rolled
                 //  - 3 doubles in a row = jail
             }
+
+            if let Some(property) = auction {
+                // TODO: Handle auctions
+                //      - Loop thru all players
+                //      - Make bids for each
+                //      - Give to the highest bidder @ the end
+                //          - Each player has option to drop out of bidding
+            }
+
+            // TODO: Check if all other players are bankrupt and end the game
         }
     }
 

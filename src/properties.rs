@@ -1,24 +1,26 @@
 use crate::utils::Money;
 
-/// A property that can be owned by players.
+/// The state of a property.
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum Property<'a> {
+pub(crate) enum PropertyState {
     /// The initial state of all properties; all properties can be bought at the start of the
     /// game.
-    NotBought(PropertyInner<'a>),
+    NotBought,
 
     /// The property is bought and owned by a player.
-    Bought(PropertyInner<'a>),
+    Bought,
 
     /// The property is mortgaged to the bank.
     ///
     /// The owning player can't collect rent on a mortgaged property.
-    Mortgaged(PropertyInner<'a>),
+    Mortgaged,
 }
 
+/// A property that can be owned by players.
+///
 /// Contains the various prices (cost, rent, mortgage) and the color of a property.
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct PropertyInner<'a> {
+pub(crate) struct Property<'a> {
     /// The name of the property.
     pub(crate) name: &'a str,
 
@@ -44,6 +46,9 @@ pub(crate) struct PropertyInner<'a> {
     /// The array is laid out in the following order:
     /// `Base, Monopoly, 1 House, 2 House, 3 House, 4 House, Hotel`
     pub(crate) rent: [Money; 7],
+
+    /// The current state of the property.
+    pub(crate) state: PropertyState,
 }
 
 /// The various types/colors of properties.
@@ -62,7 +67,7 @@ pub(crate) enum PropertyColor {
 }
 
 /// All the properties up for sale.
-pub(crate) const PROPERTIES: [Property; 28] = [Property::NotBought(PropertyInner {
+pub(crate) const PROPERTIES: [Property; 28] = [Property {
     name: "Mediterranean Avenue",
     color: PropertyColor::Brown,
     price: Money(60),
@@ -77,4 +82,5 @@ pub(crate) const PROPERTIES: [Property; 28] = [Property::NotBought(PropertyInner
         Money(160),
         Money(250),
     ],
-}); 28];
+    state: PropertyState::NotBought,
+}; 28];
