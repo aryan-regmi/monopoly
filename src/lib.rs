@@ -55,19 +55,19 @@ impl<'a> Game<'a> {
             let mut auction: Option<&mut Property> = None;
             for curr_player in 0..self.players.len() {
                 // Roll die to determine next location of player
-                self.players[curr_player].last_dice = Self::roll_dice();
+                self.get_player_mut(curr_player).last_dice = Self::roll_dice();
 
                 // Move to rolled location
                 let new_position = Self::board_index_from_dice(
-                    self.players[curr_player].position,
-                    &self.players[curr_player].last_dice,
+                    self.get_player(curr_player).position,
+                    &self.get_player(curr_player).last_dice,
                 );
-                self.players[curr_player].position = new_position;
+                self.get_player_mut(curr_player).position = new_position;
 
                 // Determine type of location and take possible actions
                 match self.board[new_position] {
                     BoardCell::Go => {
-                        self.players[curr_player].money += Money(200);
+                        self.get_player_mut(curr_player).money += Money(200);
                     }
 
                     BoardCell::Property(prop_idx) => {
@@ -97,9 +97,9 @@ impl<'a> Game<'a> {
                                     let rent = property.rent[property.rent_state as usize];
 
                                     // Pay rent to owning player
-                                    if self.players[curr_player].money >= rent {
+                                    if self.get_player(curr_player).money >= rent {
                                         owner.money += rent;
-                                        self.players[curr_player].money -= rent;
+                                        self.get_player_mut(curr_player).money -= rent;
                                     } else {
                                         // TODO: Handle if not enough money (auction)/sell/trade/mortgage properties
                                     }
@@ -125,18 +125,26 @@ impl<'a> Game<'a> {
                         // TODO: Player position set to jail position
                     }
 
-                    BoardCell::FreeParking(money) => {
-                        let player = &mut self.players[curr_player];
+                    BoardCell::FreeParking(mut money) => {
+                        let player = self.get_player_mut(curr_player);
 
                         // Player receives the money stored in free parking
                         if money.0 != 0 {
                             player.money += money;
+                            money = Money(0);
                         }
                     }
 
-                    BoardCell::IncomeTax(money) => {
-                        // TODO: Move player's money to free parking
-                        //  - Handle when player has no money!
+                    BoardCell::IncomeTax(tax) => {
+                        let player = self.get_player_mut(curr_player);
+
+                        if player.money >= tax {
+                            player.money -= tax;
+                            // TODO: Move player's money to free parking
+                            // - Set self.board[FREE_PARKING].money = tax
+                        } else {
+                            //  TODO: Handle when player has no money! (mortgage, sell houses, trade)
+                        }
                     }
                 }
 
@@ -159,6 +167,14 @@ impl<'a> Game<'a> {
 
             // TODO: Check if all other players are bankrupt and end the game
         }
+    }
+
+    fn get_player(&self, idx: usize) -> &Player {
+        &self.players[idx]
+    }
+
+    fn get_player_mut(&mut self, idx: usize) -> &mut Player {
+        &mut self.players[idx]
     }
 
     /// Determines the order of the players from highest to lowest initial rolls.
