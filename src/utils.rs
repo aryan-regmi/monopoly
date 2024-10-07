@@ -1,4 +1,4 @@
-use std::ops::{AddAssign, SubAssign};
+use std::ops::{Add, AddAssign, SubAssign};
 
 /// Represents a six-sided die.
 #[derive(Debug)]
@@ -28,5 +28,13 @@ impl SubAssign for Money {
 impl AddAssign for Money {
     fn add_assign(&mut self, rhs: Self) {
         self.0 = self.0 + rhs.0
+    }
+}
+
+impl Add<usize> for Money {
+    type Output = Money;
+
+    fn add(self, rhs: usize) -> Self::Output {
+        Self(self.0 + rhs)
     }
 }

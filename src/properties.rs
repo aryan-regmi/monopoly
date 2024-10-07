@@ -1,21 +1,5 @@
 use crate::utils::Money;
 
-/// The state of a property.
-#[derive(Debug, Clone, Copy)]
-pub(crate) enum PropertyState {
-    /// The initial state of all properties; all properties can be bought at the start of the
-    /// game.
-    NotBought,
-
-    /// The property is bought and owned by a player.
-    Bought(usize),
-
-    /// The property is mortgaged to the bank.
-    ///
-    /// The owning player can't collect rent on a mortgaged property.
-    Mortgaged,
-}
-
 /// A property that can be owned by players.
 ///
 /// Contains the various prices (cost, rent, mortgage) and the color of a property.
@@ -54,6 +38,22 @@ pub(crate) struct Property<'a> {
     pub(crate) state: PropertyState,
 }
 
+/// The state of a property.
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
+pub(crate) enum PropertyState {
+    /// The initial state of all properties; all properties can be bought at the start of the
+    /// game.
+    NotBought,
+
+    /// The property is bought and owned by a player.
+    Bought(usize),
+
+    /// The property is mortgaged to the bank.
+    ///
+    /// The owning player can't collect rent on a mortgaged property.
+    Mortgaged,
+}
+
 #[derive(Debug, Clone, Copy)]
 pub(crate) enum RentType {
     Base = 0,
@@ -63,6 +63,56 @@ pub(crate) enum RentType {
     House3,
     House4,
     Hotel,
+}
+
+impl RentType {
+    pub(crate) fn downgrade(&mut self) {
+        match self {
+            RentType::Base => *self = RentType::Base,
+            RentType::Monopoly => *self = RentType::Base,
+            RentType::House1 => *self = RentType::Monopoly,
+            RentType::House2 => *self = RentType::House1,
+            RentType::House3 => *self = RentType::House2,
+            RentType::House4 => *self = RentType::House3,
+            RentType::Hotel => *self = RentType::House4,
+        }
+    }
+
+    pub(crate) fn upgrade(&mut self) {
+        match self {
+            RentType::Base => *self = RentType::Monopoly,
+            RentType::Monopoly => *self = RentType::House1,
+            RentType::House1 => *self = RentType::House2,
+            RentType::House2 => *self = RentType::House3,
+            RentType::House3 => *self = RentType::House4,
+            RentType::House4 => *self = RentType::Hotel,
+            RentType::Hotel => *self = RentType::Hotel,
+        }
+    }
+
+    pub(crate) fn has_houses(&self) -> bool {
+        match self {
+            RentType::Base => false,
+            RentType::Monopoly => false,
+            RentType::House1 => true,
+            RentType::House2 => true,
+            RentType::House3 => true,
+            RentType::House4 => true,
+            RentType::Hotel => true,
+        }
+    }
+
+    pub(crate) fn has_monopoly(&self) -> bool {
+        match self {
+            RentType::Base => false,
+            RentType::Monopoly => true,
+            RentType::House1 => true,
+            RentType::House2 => true,
+            RentType::House3 => true,
+            RentType::House4 => true,
+            RentType::Hotel => true,
+        }
+    }
 }
 
 /// The various types/colors of properties.
