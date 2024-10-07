@@ -12,10 +12,10 @@ pub(crate) enum BoardCell {
     Property(usize),
 
     /// A location that contains a community chest.
-    CommunityChest, // TODO: RNG from set list
+    CommunityChest,
 
     /// A location that contains a chance card.
-    Chance, // TODO: RNG from set list
+    Chance,
 
     /// The jail location for those just visiting and not in jail.
     VisitingJail,

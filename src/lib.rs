@@ -63,27 +63,51 @@ impl<'a> Game<'a> {
                 let new_position = Self::board_index_from_dice(player.position, &player.last_dice);
                 player.position = new_position;
 
-                // TODO: Determine type of location
+                // TODO: Determine type of location and take possible actions
                 match self.board[new_position] {
                     BoardCell::Go => {
                         player.money += Money(200);
                     }
-                    BoardCell::Property(_) => todo!(),
-                    BoardCell::CommunityChest => todo!(),
-                    BoardCell::Chance => todo!(),
-                    BoardCell::VisitingJail => todo!(),
-                    BoardCell::Jail => todo!(),
-                    BoardCell::FreeParking(money) => todo!(),
-                    BoardCell::GoToJail => todo!(),
-                    BoardCell::IncomeTax(money) => todo!(),
-                }
+                    BoardCell::Property(prop_idx) => {
+                        let property = self.properties[prop_idx];
 
-                // TODO: Take possible actions
-                //  - Determine status of the property
-                //      - Buy if `NotBought`
-                //          - Auction if not enough money
-                //      - Nothing if `Mortgaged`
-                //      - Pay rent if `Bought`
+                        match property {
+                            Property::NotBought(prop) => {
+                                // TODO: Buy if the property is still for sale
+                                //  - Handle if not enough money (auction)/sell or mortgage properties
+                            }
+
+                            Property::Bought(property_inner) => {
+                                // TODO: Pay rent
+                                //  - Handle if not enough money (auction)/sell or mortgage properties
+                            }
+                            Property::Mortgaged(property_inner) => continue,
+                            Property::Auctioned(property_inner) => {}
+                        }
+                    }
+                    BoardCell::CommunityChest => todo!(), // TODO: RNG from set list
+                    BoardCell::Chance => todo!(),         // TODO: RNG from set list
+                    BoardCell::VisitingJail => continue,
+                    BoardCell::Jail => {
+                        // TODO:
+                        //  - Player will have to roll double or pay 50 to get out of jail
+                        //  - Add jail counter to each player, along with an "in_jail" marker
+                        //      - Check that before changing the player's position above
+                    }
+                    BoardCell::FreeParking(money) => {
+                        // Player receives the money stored in free parking
+                        if money.0 != 0 {
+                            player.money += money;
+                        }
+                    }
+                    BoardCell::GoToJail => {
+                        // TODO: Player position set to jail position
+                    }
+                    BoardCell::IncomeTax(money) => {
+                        // TODO: Move player's money to free parking
+                        //  - Handle when player has no money!
+                    }
+                }
 
                 // TODO: Reroll if double was rolled
                 //  - 3 doubles in a row = jail
@@ -135,5 +159,16 @@ impl<'a> Game<'a> {
             next_pos = 0;
         }
         next_pos
+    }
+
+    /// Auctions a property by allowing the player to make a bid on it, and returns the current
+    /// highest bid.
+    fn run_auction(
+        prop_idx: usize,
+        properties: &mut [Property],
+        player: &mut Player,
+    ) -> (&'a mut Player<'a>, Money) {
+        // TODO: Implement!
+        todo!()
     }
 }
