@@ -1,4 +1,4 @@
-use crate::{player::Player, utils::Ref};
+use crate::{player::Player, utils::RcCell};
 
 /// A property that can be bought, sold, traded, and auctioned.
 #[derive(Debug)]
@@ -22,7 +22,7 @@ pub(crate) struct Property {
     pub(crate) rent: Rent,
 
     /// The owner of the property.
-    pub(crate) owner: Option<Ref<Player>>,
+    pub(crate) owner: Option<RcCell<Player>>,
 }
 
 /// Represents different types of rents.

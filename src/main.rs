@@ -1,3 +1,4 @@
+use monopoly::{Game, Player};
 use tracing::{instrument, level_filters::LevelFilter, Level};
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, Layer, Registry};
@@ -25,5 +26,7 @@ fn setup_log() -> (WorkerGuard, WorkerGuard) {
 #[instrument]
 fn main() {
     let (_g1, _g2) = setup_log();
-    todo!()
+
+    let mut game = Game::new(vec![Player::new("P1"), Player::new("P2")]);
+    game.start_game();
 }

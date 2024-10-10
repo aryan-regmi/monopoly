@@ -1,3 +1,3 @@
 use std::{cell::RefCell, rc::Rc};
 
-pub(crate) type Ref<T> = Rc<RefCell<T>>;
+pub(crate) type RcCell<T> = Rc<RefCell<T>>;

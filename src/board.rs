@@ -1,17 +1,17 @@
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, fmt::Display, rc::Rc};
 
 use crate::{
     property::{Property, PropertyGroup, Rent},
-    utils::Ref,
+    utils::RcCell,
 };
 
-const NUM_CELLS: usize = 40;
-const NUM_CHANCE: usize = 16;
-const NUM_COMMUNITY_CHEST: usize = 16;
+pub(crate) const NUM_CELLS: usize = 40;
+pub(crate) const NUM_CHANCE: usize = 16;
+pub(crate) const NUM_COMMUNITY_CHEST: usize = 16;
 
 /// Represents a position on the board.
 #[derive(Debug)]
-enum BoardCell {
+pub(crate) enum BoardCell {
     /// The initial position of all player.
     ///
     /// Collect $200 if this is passed.
@@ -45,8 +45,23 @@ enum BoardCell {
     Property(Property),
 }
 
+impl Display for BoardCell {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            BoardCell::Go => f.write_str("Go"),
+            BoardCell::CommunityChest => f.write_str("Community Chest"),
+            BoardCell::Tax(tax) => f.write_fmt(format_args!("Tax (${})", tax)),
+            BoardCell::Chance => f.write_str("Chance"),
+            BoardCell::Jail => f.write_str("Jail"),
+            BoardCell::FreeParking(_) => f.write_str("Free Parking"),
+            BoardCell::GoToJail => f.write_str("Go To Jail"),
+            BoardCell::Property(property) => f.write_fmt(format_args!("{}", property.name)),
+        }
+    }
+}
+
 #[derive(Debug)]
-enum ChanceCard {
+pub(crate) enum ChanceCard {
     /// Advance to "Go", collect $200.
     AdvanceToGo = 0,
 
@@ -101,7 +116,7 @@ enum ChanceCard {
 
 /// The various community chest cards.
 #[derive(Debug)]
-enum CommunityChestCard {
+pub(crate) enum CommunityChestCard {
     /// Advance to "Go", collect $200.
     AdvanceToGo = 0,
 
@@ -152,19 +167,19 @@ enum CommunityChestCard {
 }
 
 #[derive(Debug)]
-struct Board {
+pub(crate) struct Board {
     /// All possible positions on the board.
-    cells: Vec<Ref<BoardCell>>,
+    pub(crate) cells: Vec<RcCell<BoardCell>>,
 
     /// All possible chance cards.
-    chance_cards: Vec<Ref<ChanceCard>>,
+    pub(crate) chance_cards: Vec<RcCell<ChanceCard>>,
 
     /// All possible community chest cards.
-    community_chest_cards: Vec<Ref<CommunityChestCard>>,
+    pub(crate) community_chest_cards: Vec<RcCell<CommunityChestCard>>,
 }
 
 impl Board {
-    fn new() -> Self {
+    pub(crate) fn new() -> Self {
         // Initialize board
         let mut cells = Vec::with_capacity(NUM_CELLS);
         {
@@ -639,53 +654,57 @@ impl Board {
         // TODO: Randomize order of CommunityChest and Chance cards!!
 
         // Initialize Community Chest
-        let mut community_chest = Vec::with_capacity(NUM_COMMUNITY_CHEST);
+        let mut community_chest_cards = Vec::with_capacity(NUM_COMMUNITY_CHEST);
         {
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::AdvanceToGo)));
-            community_chest.push(Rc::new(RefCell::new(
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::AdvanceToGo)));
+            community_chest_cards.push(Rc::new(RefCell::new(
                 CommunityChestCard::BankErrorInYourFavor,
             )));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::DoctorsFees)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::SaleOfStock)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::GetOutOfJailFree)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::GoToJail)));
-            community_chest.push(Rc::new(RefCell::new(
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::DoctorsFees)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::SaleOfStock)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::GetOutOfJailFree)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::GoToJail)));
+            community_chest_cards.push(Rc::new(RefCell::new(
                 CommunityChestCard::HolidayFundMatures,
             )));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::IncomeTaxRefund)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::Birthday)));
-            community_chest.push(Rc::new(RefCell::new(
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::IncomeTaxRefund)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::Birthday)));
+            community_chest_cards.push(Rc::new(RefCell::new(
                 CommunityChestCard::LifeInsuranceMatures,
             )));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::HospitalFees)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::SchoolFees)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::ConsultancyFee)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::StreetRepairs)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::BeautyContest)));
-            community_chest.push(Rc::new(RefCell::new(CommunityChestCard::Inherit)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::HospitalFees)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::SchoolFees)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::ConsultancyFee)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::StreetRepairs)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::BeautyContest)));
+            community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::Inherit)));
         }
 
         // Initialize Community Chest
-        let mut chance = Vec::with_capacity(NUM_CHANCE);
+        let mut chance_cards = Vec::with_capacity(NUM_CHANCE);
         {
-            chance.push(Rc::new(RefCell::new(ChanceCard::AdvanceToGo)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::AdvanceToIllinois)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::AdvanceToStCharlesPlace)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::AdvanceToNearestUtility)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::AdvanceToNearestRailroad)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::Dividend)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::GetOutOfJailFree)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::GoBack3Spaces)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::GoToJail)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::GeneralRepairs)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::AdvanceToReadingRailroad)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::PoorTax)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::AdvanceToBoardwalk)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::ChairmanOfTheBoard)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::BuildingLoanMatures)));
-            chance.push(Rc::new(RefCell::new(ChanceCard::HolidayFundMatures)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::AdvanceToGo)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::AdvanceToIllinois)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::AdvanceToStCharlesPlace)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::AdvanceToNearestUtility)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::AdvanceToNearestRailroad)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::Dividend)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::GetOutOfJailFree)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::GoBack3Spaces)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::GoToJail)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::GeneralRepairs)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::AdvanceToReadingRailroad)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::PoorTax)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::AdvanceToBoardwalk)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::ChairmanOfTheBoard)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::BuildingLoanMatures)));
+            chance_cards.push(Rc::new(RefCell::new(ChanceCard::HolidayFundMatures)));
         }
 
-        todo!()
+        Self {
+            cells,
+            chance_cards,
+            community_chest_cards,
+        }
     }
 }
