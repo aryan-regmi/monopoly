@@ -11,10 +11,21 @@ use std::{cell::RefCell, rc::Rc};
 use tracing::instrument;
 use utils::RcCell;
 
+/// Represents the various possible states of the game.
+#[derive(Debug, PartialEq, PartialOrd)]
+enum GameState {
+    Created,
+    Running,
+    Paused,
+    Finished,
+}
+
+/// The actual game to be run by users.
 #[derive(Debug)]
 pub struct Game {
     players: Vec<RcCell<Player>>,
     board: Board,
+    state: GameState,
 }
 
 impl Game {
@@ -32,32 +43,44 @@ impl Game {
                 .map(|p| Rc::new(RefCell::new(p.clone())))
                 .collect(),
             board: Board::new(),
+            state: GameState::Created,
         }
     }
 
+    /// Runs the game in a loop until a winner is determined.
     #[instrument(skip(self))]
-    pub fn start_game(&mut self) {
-        // TODO: This should be in a loop!
-        for player in self.players.clone() {
-            self.take_turn(player.clone());
+    pub fn run(&mut self) {
+        while self.state != GameState::Finished {
+            self.advance();
+        }
+    }
 
-            let mut num_doubles = 0;
-            let mut last_dice = player.borrow().last_dice.unwrap();
-            while last_dice.0 == last_dice.1 {
-                num_doubles += 1;
-
-                // Roll again if double rolled
+    /// Advance the game by one round (each player gets a turn).
+    pub fn advance(&mut self) {
+        if self.state != GameState::Paused {
+            self.state = GameState::Running;
+            for player in self.players.clone() {
                 self.take_turn(player.clone());
-                last_dice = player.borrow().last_dice.unwrap();
+                let mut num_doubles = 0;
+                let mut last_dice = player.borrow().last_dice.unwrap();
+                while last_dice.0 == last_dice.1 {
+                    num_doubles += 1;
 
-                // Go to jail if 3 doubles in a row
-                if num_doubles == 3 {
-                    player.borrow_mut().current_position = 9;
+                    // Roll again if double rolled
+                    self.take_turn(player.clone());
+                    last_dice = player.borrow().last_dice.unwrap();
+
+                    // Go to jail if 3 doubles in a row
+                    if num_doubles == 3 {
+                        player.borrow_mut().current_position = 9;
+                    }
                 }
             }
         }
     }
 
+    /// Simulates a player's turn by rolling dice to move them to the next position, and handling
+    /// the newly landed position.
     #[instrument(skip(self, player))]
     fn take_turn(&mut self, player: RcCell<Player>) {
         // Roll dice and move the player
@@ -79,13 +102,19 @@ impl Game {
             board::BoardCell::Go => {
                 player.borrow_mut().money += 200;
             }
-            board::BoardCell::CommunityChest => todo!(),
+            board::BoardCell::CommunityChest => {
+                // TODO: Implement!
+            }
             board::BoardCell::Tax(tax) => {
                 // TODO: Handle if not enough money!
                 player.borrow_mut().money -= tax;
             }
-            board::BoardCell::Chance => todo!(),
-            board::BoardCell::Jail => todo!(),
+            board::BoardCell::Chance => {
+                // TODO: Implement!
+            }
+            board::BoardCell::Jail => {
+                // TODO: Implement!
+            }
             board::BoardCell::FreeParking(money) => {
                 player.borrow_mut().money += money;
             }
