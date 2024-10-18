@@ -1,7 +1,7 @@
 use crate::{player::Player, utils::RcCell};
 
 /// A property that can be bought, sold, traded, and auctioned.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct Property {
     /// Name of the property.
     pub(crate) name: String,
@@ -26,7 +26,7 @@ pub(crate) struct Property {
 }
 
 /// Represents different types of rents.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) enum Rent {
     Property {
         base: usize,
@@ -51,7 +51,7 @@ pub(crate) enum Rent {
     },
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum PropertyGroup {
     Brown,
     LightBlue,

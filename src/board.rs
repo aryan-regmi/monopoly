@@ -13,7 +13,7 @@ pub(crate) const NUM_CHANCE: usize = 16;
 pub(crate) const NUM_COMMUNITY_CHEST: usize = 16;
 
 /// Represents a position on the board.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) enum BoardCell {
     /// The initial position of all player.
     ///
