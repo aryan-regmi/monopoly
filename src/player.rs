@@ -48,7 +48,7 @@ impl Player {
     /// Gets the next position on the board, given the player's last dice roll;.
     fn get_next_position(&self) -> usize {
         let next_space = self.current_position + self.spaces_to_move();
-        next_space % NUM_CELLS // NOTE: NUM_CELLS - 1?
+        next_space % NUM_CELLS
     }
 
     /// Rolls the dice and moves the player to the new position.

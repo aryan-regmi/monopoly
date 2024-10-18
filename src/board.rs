@@ -1,5 +1,7 @@
 use std::{cell::RefCell, fmt::Display, rc::Rc};
 
+use rand::Rng;
+
 use crate::{
     property::{Property, PropertyGroup, Rent},
     utils::RcCell,
@@ -651,8 +653,6 @@ impl Board {
             }))));
         }
 
-        // TODO: Randomize order of CommunityChest and Chance cards!!
-
         // Initialize Community Chest
         let mut community_chest_cards = Vec::with_capacity(NUM_COMMUNITY_CHEST);
         {
@@ -678,6 +678,18 @@ impl Board {
             community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::StreetRepairs)));
             community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::BeautyContest)));
             community_chest_cards.push(Rc::new(RefCell::new(CommunityChestCard::Inherit)));
+
+            // Randomize order
+            let mut idxs = Vec::with_capacity(NUM_COMMUNITY_CHEST);
+            let mut shuffled = Vec::with_capacity(NUM_COMMUNITY_CHEST);
+            while idxs.len() < NUM_COMMUNITY_CHEST {
+                let idx = rand::thread_rng().gen_range(0..NUM_COMMUNITY_CHEST);
+                if !idxs.contains(&idx) {
+                    shuffled.push(community_chest_cards[idx].clone());
+                    idxs.push(idx);
+                }
+            }
+            community_chest_cards = shuffled;
         }
 
         // Initialize Community Chest
@@ -699,6 +711,18 @@ impl Board {
             chance_cards.push(Rc::new(RefCell::new(ChanceCard::ChairmanOfTheBoard)));
             chance_cards.push(Rc::new(RefCell::new(ChanceCard::BuildingLoanMatures)));
             chance_cards.push(Rc::new(RefCell::new(ChanceCard::HolidayFundMatures)));
+
+            // Randomize order
+            let mut idxs = Vec::with_capacity(NUM_CHANCE);
+            let mut shuffled = Vec::with_capacity(NUM_CHANCE);
+            while idxs.len() < NUM_CHANCE {
+                let idx = rand::thread_rng().gen_range(0..NUM_CHANCE);
+                if !idxs.contains(&idx) {
+                    shuffled.push(chance_cards[idx].clone());
+                    idxs.push(idx);
+                }
+            }
+            chance_cards = shuffled;
         }
 
         Self {
