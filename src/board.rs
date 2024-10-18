@@ -62,7 +62,7 @@ impl Display for BoardCell {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum ChanceCard {
     /// Advance to "Go", collect $200.
     AdvanceToGo = 0,
@@ -117,7 +117,7 @@ pub(crate) enum ChanceCard {
 }
 
 /// The various community chest cards.
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub(crate) enum CommunityChestCard {
     /// Advance to "Go", collect $200.
     AdvanceToGo = 0,
@@ -731,4 +731,55 @@ impl Board {
             community_chest_cards,
         }
     }
+
+    /// Draw from the top and place at the bottom
+    pub(crate) fn draw_community_chest_card(&mut self) -> CommunityChestCard {
+        let drawn = self.community_chest_cards.pop().unwrap();
+        self.community_chest_cards.insert(0, drawn.clone());
+        drawn.clone().borrow().clone()
+    }
+}
+
+// Defines all positions as indicies.
+pub(crate) mod positions {
+    pub(crate) const GO: usize = 0;
+    pub(crate) const MEDITERRANEAN_AVENUE: usize = 1;
+    pub(crate) const COMMUNITY_CHEST_1: usize = 2;
+    pub(crate) const BALTIC_AVENUE: usize = 3;
+    pub(crate) const INCOME_TAX: usize = 4;
+    pub(crate) const READING_RAILROAD: usize = 5;
+    pub(crate) const ORIENTAL_AVENUE: usize = 6;
+    pub(crate) const CHANCE_1: usize = 7;
+    pub(crate) const VERMONT_AVENUE: usize = 8;
+    pub(crate) const CONNECTICUT_AVENUE: usize = 9;
+    pub(crate) const JAIL: usize = 10;
+    pub(crate) const ST_CHARLES_PLACE: usize = 11;
+    pub(crate) const ELECTRIC_COMPANY: usize = 12;
+    pub(crate) const STATES_AVENUE: usize = 13;
+    pub(crate) const VIRGINIA_AVENUE: usize = 14;
+    pub(crate) const PENNSYLVANIA_RAILROAD: usize = 15;
+    pub(crate) const ST_JAMES_PLACE: usize = 16;
+    pub(crate) const COMMUNITY_CHEST_2: usize = 17;
+    pub(crate) const TENNESSEE_AVENUE: usize = 18;
+    pub(crate) const NEW_YORK_AVENUE: usize = 19;
+    pub(crate) const FREE_PARKING: usize = 20;
+    pub(crate) const KENTUCKY_AVENUE: usize = 21;
+    pub(crate) const CHANCE_2: usize = 22;
+    pub(crate) const INDIANA_AVENUE: usize = 23;
+    pub(crate) const ILLINOIS_AVENUE: usize = 24;
+    pub(crate) const B_O_RAILROAD: usize = 25;
+    pub(crate) const ATLANTIC_AVENUE: usize = 26;
+    pub(crate) const VENTNOR_AVENUE: usize = 27;
+    pub(crate) const WATER_WORKS: usize = 28;
+    pub(crate) const MARVIN_GARDENS: usize = 29;
+    pub(crate) const GO_TO_JAIL: usize = 30;
+    pub(crate) const PACIFIC_AVENUE: usize = 31;
+    pub(crate) const NORTH_CAROLINA_AVENUE: usize = 32;
+    pub(crate) const COMMUNITY_CHEST_3: usize = 33;
+    pub(crate) const PENNSYLVANIA_AVENUE: usize = 34;
+    pub(crate) const SHORT_LINE: usize = 35;
+    pub(crate) const CHANCE_3: usize = 36;
+    pub(crate) const PARK_PLACE: usize = 37;
+    pub(crate) const LUXURY_TAX: usize = 38;
+    pub(crate) const BOARDWALK: usize = 39;
 }

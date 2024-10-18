@@ -5,7 +5,7 @@ mod player;
 mod property;
 mod utils;
 
-use board::Board;
+use board::{Board, BoardCell};
 pub use player::Player;
 use std::{cell::RefCell, rc::Rc};
 use tracing::instrument;
@@ -72,7 +72,9 @@ impl Game {
 
                     // Go to jail if 3 doubles in a row
                     if num_doubles == 3 {
-                        player.borrow_mut().current_position = 9;
+                        let mut player = player.borrow_mut();
+                        player.in_jail = true;
+                        player.current_position = board::positions::JAIL;
                     }
                 }
             }
@@ -103,23 +105,70 @@ impl Game {
                 player.borrow_mut().money += 200;
             }
             board::BoardCell::CommunityChest => {
-                // TODO: Implement!
+                let card = self.board.draw_community_chest_card();
+                match card {
+                    board::CommunityChestCard::AdvanceToGo => {
+                        let mut player = player.borrow_mut();
+                        player.money += 200;
+                        player.current_position = board::positions::GO;
+                    }
+                    board::CommunityChestCard::BankErrorInYourFavor => todo!(),
+                    board::CommunityChestCard::DoctorsFees => todo!(),
+                    board::CommunityChestCard::SaleOfStock => todo!(),
+                    board::CommunityChestCard::GetOutOfJailFree => todo!(),
+                    board::CommunityChestCard::GoToJail => todo!(),
+                    board::CommunityChestCard::HolidayFundMatures => todo!(),
+                    board::CommunityChestCard::IncomeTaxRefund => todo!(),
+                    board::CommunityChestCard::Birthday => todo!(),
+                    board::CommunityChestCard::LifeInsuranceMatures => todo!(),
+                    board::CommunityChestCard::HospitalFees => todo!(),
+                    board::CommunityChestCard::SchoolFees => todo!(),
+                    board::CommunityChestCard::ConsultancyFee => todo!(),
+                    board::CommunityChestCard::StreetRepairs => todo!(),
+                    board::CommunityChestCard::BeautyContest => todo!(),
+                    board::CommunityChestCard::Inherit => todo!(),
+                }
             }
             board::BoardCell::Tax(tax) => {
                 // TODO: Handle if not enough money!
                 player.borrow_mut().money -= tax;
             }
             board::BoardCell::Chance => {
-                // TODO: Implement!
+                let card = self.board.draw_community_chest_card();
+                match card {
+                    board::CommunityChestCard::AdvanceToGo => todo!(),
+                    board::CommunityChestCard::BankErrorInYourFavor => todo!(),
+                    board::CommunityChestCard::DoctorsFees => todo!(),
+                    board::CommunityChestCard::SaleOfStock => todo!(),
+                    board::CommunityChestCard::GetOutOfJailFree => todo!(),
+                    board::CommunityChestCard::GoToJail => todo!(),
+                    board::CommunityChestCard::HolidayFundMatures => todo!(),
+                    board::CommunityChestCard::IncomeTaxRefund => todo!(),
+                    board::CommunityChestCard::Birthday => todo!(),
+                    board::CommunityChestCard::LifeInsuranceMatures => todo!(),
+                    board::CommunityChestCard::HospitalFees => todo!(),
+                    board::CommunityChestCard::SchoolFees => todo!(),
+                    board::CommunityChestCard::ConsultancyFee => todo!(),
+                    board::CommunityChestCard::StreetRepairs => todo!(),
+                    board::CommunityChestCard::BeautyContest => todo!(),
+                    board::CommunityChestCard::Inherit => todo!(),
+                }
             }
             board::BoardCell::Jail => {
-                // TODO: Implement!
+                if player.borrow().in_jail == true {
+                    // TODO: Handle jail actions
+                }
+
+                // Do nothing if player is just visiting!
+                tracing::info!("{} is visiting jail.", player.borrow().name);
             }
             board::BoardCell::FreeParking(money) => {
                 player.borrow_mut().money += money;
             }
             board::BoardCell::GoToJail => {
-                player.borrow_mut().current_position = 9;
+                let mut player = player.borrow_mut();
+                player.in_jail = true;
+                player.current_position = board::positions::JAIL;
             }
             board::BoardCell::Property(property) => {
                 // TODO:

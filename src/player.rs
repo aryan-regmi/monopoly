@@ -19,6 +19,9 @@ pub struct Player {
 
     /// Current position on the board.
     pub(crate) current_position: usize,
+
+    /// Used to determine if the player is just visiting jail or in it.
+    pub(crate) in_jail: bool,
 }
 
 impl Player {
@@ -29,6 +32,7 @@ impl Player {
             last_dice: None,
             money: 1500,
             current_position: 0,
+            in_jail: false,
         }
     }
 
