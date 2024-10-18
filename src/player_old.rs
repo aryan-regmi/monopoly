@@ -1,7 +1,7 @@
 use rand::Rng;
 use tracing::instrument;
 
-use crate::{board::NUM_CELLS, property::Property, utils::RcCell};
+use crate::{board_old::NUM_CELLS, property_old::Property, utils::RcCell};
 
 #[derive(Debug, Clone)]
 pub struct Player {

@@ -1,4 +1,4 @@
-use crate::{player::Player, utils::RcCell};
+use crate::{player_old::Player, utils::RcCell};
 
 /// A property that can be bought, sold, traded, and auctioned.
 #[derive(Debug, Clone)]

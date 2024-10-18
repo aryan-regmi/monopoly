@@ -1,4 +1,8 @@
-use monopoly::{Game, Player};
+use bevy_ecs::prelude::*;
+use monopoly::{
+    board::{Board, Property, PropertyGroup, Rent, Space},
+    Game,
+};
 use tracing::{instrument, level_filters::LevelFilter, Level};
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, Layer, Registry};
@@ -27,10 +31,5 @@ fn setup_log() -> (WorkerGuard, WorkerGuard) {
 fn main() {
     let (_g1, _g2) = setup_log();
 
-    let mut game = Game::new(vec![Player::new("P1"), Player::new("P2")]);
-    for i in 0..100 {
-        tracing::info!("Turn {}", i);
-        game.advance();
-    }
-    // game.run();
+    Game::new(4);
 }
