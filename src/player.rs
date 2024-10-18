@@ -22,6 +22,9 @@ pub struct Player {
 
     /// Used to determine if the player is just visiting jail or in it.
     pub(crate) in_jail: bool,
+
+    /// Used to determine if the player owns the "Get out of jail free" card.
+    pub(crate) get_out_of_jail_free: bool,
 }
 
 impl Player {
@@ -33,6 +36,7 @@ impl Player {
             money: 1500,
             current_position: 0,
             in_jail: false,
+            get_out_of_jail_free: false,
         }
     }
 

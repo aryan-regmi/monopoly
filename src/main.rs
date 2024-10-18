@@ -28,7 +28,7 @@ fn main() {
     let (_g1, _g2) = setup_log();
 
     let mut game = Game::new(vec![Player::new("P1"), Player::new("P2")]);
-    for i in 0..5 {
+    for i in 0..100 {
         tracing::info!("Turn {}", i);
         game.advance();
     }

@@ -112,21 +112,62 @@ impl Game {
                         player.money += 200;
                         player.current_position = board::positions::GO;
                     }
-                    board::CommunityChestCard::BankErrorInYourFavor => todo!(),
-                    board::CommunityChestCard::DoctorsFees => todo!(),
-                    board::CommunityChestCard::SaleOfStock => todo!(),
-                    board::CommunityChestCard::GetOutOfJailFree => todo!(),
-                    board::CommunityChestCard::GoToJail => todo!(),
-                    board::CommunityChestCard::HolidayFundMatures => todo!(),
-                    board::CommunityChestCard::IncomeTaxRefund => todo!(),
-                    board::CommunityChestCard::Birthday => todo!(),
-                    board::CommunityChestCard::LifeInsuranceMatures => todo!(),
-                    board::CommunityChestCard::HospitalFees => todo!(),
-                    board::CommunityChestCard::SchoolFees => todo!(),
-                    board::CommunityChestCard::ConsultancyFee => todo!(),
-                    board::CommunityChestCard::StreetRepairs => todo!(),
-                    board::CommunityChestCard::BeautyContest => todo!(),
-                    board::CommunityChestCard::Inherit => todo!(),
+                    board::CommunityChestCard::BankErrorInYourFavor => {
+                        player.borrow_mut().money += 200;
+                    }
+                    board::CommunityChestCard::DoctorsFees => {
+                        // TODO: Handle if not enought money
+                        player.borrow_mut().money -= 50;
+                        self.board.add_to_free_parking(50);
+                    }
+                    board::CommunityChestCard::SaleOfStock => {
+                        player.borrow_mut().money += 50;
+                    }
+                    board::CommunityChestCard::GetOutOfJailFree => {
+                        player.borrow_mut().get_out_of_jail_free = true;
+                    }
+                    board::CommunityChestCard::GoToJail => {
+                        player.borrow_mut().current_position = board::positions::JAIL;
+                    }
+                    board::CommunityChestCard::HolidayFundMatures => {
+                        player.borrow_mut().money += 100;
+                    }
+                    board::CommunityChestCard::IncomeTaxRefund => {
+                        player.borrow_mut().money += 20;
+                    }
+                    board::CommunityChestCard::Birthday => {
+                        for other in &mut self.players {
+                            if player.borrow().name != other.borrow().name {
+                                // TODO: Pay the current player
+                                //      - Add payment methods in Player struct
+                            }
+                        }
+                    }
+                    board::CommunityChestCard::LifeInsuranceMatures => {
+                        player.borrow_mut().money += 100;
+                    }
+                    board::CommunityChestCard::HospitalFees => {
+                        // TODO: Handle if not enought money
+                        player.borrow_mut().money -= 50;
+                        self.board.add_to_free_parking(50);
+                    }
+                    board::CommunityChestCard::SchoolFees => {
+                        // TODO: Handle if not enought money
+                        player.borrow_mut().money -= 50;
+                        self.board.add_to_free_parking(50);
+                    }
+                    board::CommunityChestCard::ConsultancyFee => {
+                        player.borrow_mut().money += 25;
+                    }
+                    board::CommunityChestCard::StreetRepairs => {
+                        // TODO Implement
+                    }
+                    board::CommunityChestCard::BeautyContest => {
+                        player.borrow_mut().money += 10;
+                    }
+                    board::CommunityChestCard::Inherit => {
+                        player.borrow_mut().money += 100;
+                    }
                 }
             }
             board::BoardCell::Tax(tax) => {
@@ -136,22 +177,67 @@ impl Game {
             board::BoardCell::Chance => {
                 let card = self.board.draw_community_chest_card();
                 match card {
-                    board::CommunityChestCard::AdvanceToGo => todo!(),
-                    board::CommunityChestCard::BankErrorInYourFavor => todo!(),
-                    board::CommunityChestCard::DoctorsFees => todo!(),
-                    board::CommunityChestCard::SaleOfStock => todo!(),
-                    board::CommunityChestCard::GetOutOfJailFree => todo!(),
-                    board::CommunityChestCard::GoToJail => todo!(),
-                    board::CommunityChestCard::HolidayFundMatures => todo!(),
-                    board::CommunityChestCard::IncomeTaxRefund => todo!(),
-                    board::CommunityChestCard::Birthday => todo!(),
-                    board::CommunityChestCard::LifeInsuranceMatures => todo!(),
-                    board::CommunityChestCard::HospitalFees => todo!(),
-                    board::CommunityChestCard::SchoolFees => todo!(),
-                    board::CommunityChestCard::ConsultancyFee => todo!(),
-                    board::CommunityChestCard::StreetRepairs => todo!(),
-                    board::CommunityChestCard::BeautyContest => todo!(),
-                    board::CommunityChestCard::Inherit => todo!(),
+                    board::CommunityChestCard::AdvanceToGo => {
+                        let mut player = player.borrow_mut();
+                        player.money += 200;
+                        player.current_position = board::positions::GO;
+                    }
+                    board::CommunityChestCard::BankErrorInYourFavor => {
+                        player.borrow_mut().money += 200;
+                    }
+                    board::CommunityChestCard::DoctorsFees => {
+                        // TODO: Handle if not enought money
+                        player.borrow_mut().money -= 50;
+                        self.board.add_to_free_parking(50);
+                    }
+                    board::CommunityChestCard::SaleOfStock => {
+                        player.borrow_mut().money += 50;
+                    }
+                    board::CommunityChestCard::GetOutOfJailFree => {
+                        player.borrow_mut().get_out_of_jail_free = true;
+                    }
+                    board::CommunityChestCard::GoToJail => {
+                        player.borrow_mut().current_position = board::positions::JAIL;
+                    }
+                    board::CommunityChestCard::HolidayFundMatures => {
+                        player.borrow_mut().money += 100;
+                    }
+                    board::CommunityChestCard::IncomeTaxRefund => {
+                        player.borrow_mut().money += 20;
+                    }
+                    board::CommunityChestCard::Birthday => {
+                        for other in &mut self.players {
+                            if player.borrow().name != other.borrow().name {
+                                // TODO: Pay the current player
+                                //      - Add payment methods in Player struct
+                            }
+                        }
+                    }
+                    board::CommunityChestCard::LifeInsuranceMatures => {
+                        player.borrow_mut().money += 20;
+                    }
+                    board::CommunityChestCard::HospitalFees => {
+                        // TODO: Handle if not enought money
+                        player.borrow_mut().money -= 50;
+                        self.board.add_to_free_parking(50);
+                    }
+                    board::CommunityChestCard::SchoolFees => {
+                        // TODO: Handle if not enought money
+                        player.borrow_mut().money -= 50;
+                        self.board.add_to_free_parking(50);
+                    }
+                    board::CommunityChestCard::ConsultancyFee => {
+                        player.borrow_mut().money += 25;
+                    }
+                    board::CommunityChestCard::StreetRepairs => {
+                        // TODO: Implement!
+                    }
+                    board::CommunityChestCard::BeautyContest => {
+                        player.borrow_mut().money += 10;
+                    }
+                    board::CommunityChestCard::Inherit => {
+                        player.borrow_mut().money += 100;
+                    }
                 }
             }
             board::BoardCell::Jail => {
@@ -163,7 +249,13 @@ impl Game {
                 tracing::info!("{} is visiting jail.", player.borrow().name);
             }
             board::BoardCell::FreeParking(money) => {
-                player.borrow_mut().money += money;
+                let free_parking_money = self.board.cells[board::positions::FREE_PARKING].clone();
+                let free_parking_cell = free_parking_money.borrow();
+                if let BoardCell::FreeParking(money) = *free_parking_cell {
+                    player.borrow_mut().money += money;
+                }
+                *self.board.cells[board::positions::FREE_PARKING].borrow_mut() =
+                    BoardCell::FreeParking(0);
             }
             board::BoardCell::GoToJail => {
                 let mut player = player.borrow_mut();

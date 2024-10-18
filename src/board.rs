@@ -1,5 +1,6 @@
 use std::{cell::RefCell, fmt::Display, rc::Rc};
 
+use positions::FREE_PARKING;
 use rand::Rng;
 
 use crate::{
@@ -732,15 +733,40 @@ impl Board {
         }
     }
 
-    /// Draw from the top and place at the bottom
+    /// Draw from the top of community chest pile and place at the bottom.
     pub(crate) fn draw_community_chest_card(&mut self) -> CommunityChestCard {
         let drawn = self.community_chest_cards.pop().unwrap();
         self.community_chest_cards.insert(0, drawn.clone());
         drawn.clone().borrow().clone()
     }
+
+    /// Draw from the top of chance pile and place at the bottom.
+    pub(crate) fn draw_chance_card(&mut self) -> ChanceCard {
+        let drawn = self.chance_cards.pop().unwrap();
+        self.chance_cards.insert(0, drawn.clone());
+        drawn.clone().borrow().clone()
+    }
+
+    /// Adds the given amount to free parking.
+    pub(crate) fn add_to_free_parking(&mut self, amount: usize) {
+        let mut cell = self.cells[positions::FREE_PARKING].borrow_mut();
+        if let BoardCell::FreeParking(curr) = *cell {
+            *cell = BoardCell::FreeParking(curr + amount);
+        }
+    }
+
+    /// Removes all the money from free parking.
+    pub(crate) fn remove_from_free_parking(&mut self) -> usize {
+        let mut cell = self.cells[positions::FREE_PARKING].borrow_mut();
+        if let BoardCell::FreeParking(curr) = *cell {
+            *cell = BoardCell::FreeParking(0);
+            return curr;
+        }
+        unreachable!()
+    }
 }
 
-// Defines all positions as indicies.
+/// Defines all positions as indicies.
 pub(crate) mod positions {
     pub(crate) const GO: usize = 0;
     pub(crate) const MEDITERRANEAN_AVENUE: usize = 1;
