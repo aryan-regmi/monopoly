@@ -1,7 +1,7 @@
 use bevy_ecs::prelude::*;
 use rand::Rng;
 
-use crate::utils::NUM_SPACES;
+use crate::utils::{NUM_CHANCE, NUM_COMMUNITY_CHEST, NUM_SPACES};
 
 /// Represents the actual board.
 #[derive(Resource)]
@@ -672,9 +672,6 @@ pub struct CommunityChestCards(pub Vec<CommunityChestCard>);
 /// The various chance cards.
 #[derive(Resource)]
 pub struct ChanceCards(pub Vec<ChanceCard>);
-
-pub(crate) const NUM_CHANCE: usize = 16;
-pub(crate) const NUM_COMMUNITY_CHEST: usize = 16;
 
 impl Default for CommunityChestCards {
     fn default() -> Self {

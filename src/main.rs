@@ -1,8 +1,4 @@
-use bevy_ecs::prelude::*;
-use monopoly::{
-    board::{Board, Property, PropertyGroup, Rent, Space},
-    Game,
-};
+use monopoly::Game;
 use tracing::{instrument, level_filters::LevelFilter, Level};
 use tracing_appender::non_blocking::WorkerGuard;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, Layer, Registry};

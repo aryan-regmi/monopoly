@@ -4,8 +4,14 @@ use crate::board::Property;
 use bevy_ecs::prelude::*;
 
 /// A unique identifier.
-#[derive(Component, Debug)]
+#[derive(Component)]
 pub struct Id(pub(crate) usize);
+
+impl std::fmt::Debug for Id {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!("{}", self.0))
+    }
+}
 
 /// A list of properties owned by a player.
 #[derive(Component)]

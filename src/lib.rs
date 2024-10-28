@@ -8,6 +8,7 @@ use board::{
 use player::{HasGetOutOfJailFreeCard, Id, InJail, Money, OwnedProperties, Position};
 use rand::Rng;
 use tracing::{info, instrument};
+use utils::NUM_SPACES;
 
 pub mod board;
 pub mod player;
@@ -81,7 +82,7 @@ impl Game {
             // Roll dice and move player
             let mut last_roll = Self::roll_dice();
             let mut last_pos = player.3 .0;
-            *player.3 = Position(last_pos + last_roll.0 + last_roll.1);
+            *player.3 = Position((last_pos + last_roll.0 + last_roll.1) % NUM_SPACES);
 
             Self::move_player(
                 &mut board,
@@ -94,11 +95,11 @@ impl Game {
 
             // Reroll if double
             let mut double_count = 0;
-            while last_roll.0 == last_roll.1 {
+            while last_roll.0 == last_roll.1 && double_count != 3 {
                 double_count += 1;
                 last_roll = Self::roll_dice();
                 last_pos = player.3 .0;
-                *player.3 = Position(last_pos + last_roll.0 + last_roll.1);
+                *player.3 = Position((last_pos + last_roll.0 + last_roll.1) % NUM_SPACES);
 
                 Self::move_player(
                     &mut board,
@@ -152,6 +153,10 @@ impl Game {
             board::Space::Go => {
                 if last_pos != 0 {
                     *player.2 += Money(200);
+                    info!(
+                        "Player {:?} passed go and collected $200 (current money: ${})",
+                        player.0, player.2 .0
+                    );
                 }
             }
             board::Space::CommunityChest => {
@@ -160,8 +165,18 @@ impl Game {
                     board::CommunityChestCard::AdvanceToGo => {
                         *player.3 = Position(positions::GO);
                         *player.2 += Money(200);
+                        info!(
+                            "Player {:?} passed go and collected $200 (current money: ${})",
+                            player.0, player.2 .0
+                        );
                     }
-                    board::CommunityChestCard::BankErrorInYourFavor => *player.2 += Money(200),
+                    board::CommunityChestCard::BankErrorInYourFavor => {
+                        *player.2 += Money(200);
+                        info!(
+                            "Bank error in player's {:?} favor (current money: ${})",
+                            player.0, player.2 .0
+                        );
+                    }
                     board::CommunityChestCard::DoctorsFees => {
                         let fine = 50;
                         // Pay and add fine to free parking
@@ -171,28 +186,111 @@ impl Game {
                                 *amount += fine;
                             }
                             *player.2 -= Money(fine);
+                            info!(
+                                "Player {:?} paid doctor's fees of $50 (current money: ${})",
+                                player.0, player.2 .0
+                            );
                         } else {
                             Self::handle_not_enough_money(player);
                         }
                     }
-                    board::CommunityChestCard::SaleOfStock => *player.2 += Money(50),
+                    board::CommunityChestCard::SaleOfStock => {
+                        *player.2 += Money(50);
+                        info!(
+                            "From sale of stock player {:?} received $50 (current money: ${})",
+                            player.0, player.2 .0
+                        );
+                    }
                     board::CommunityChestCard::GetOutOfJailFree => {
-                        *player.5 = HasGetOutOfJailFreeCard(true)
+                        *player.5 = HasGetOutOfJailFreeCard(true);
+                        info!(
+                            "Player {:?} received a `Get Out Of Jail Free` card",
+                            player.0
+                        );
                     }
                     board::CommunityChestCard::GoToJail => {
                         *player.3 = Position(positions::JAIL);
                         *player.4 = InJail(true);
+                        info!("Player {:?} was sent to jail", player.0);
                     }
-                    board::CommunityChestCard::HolidayFundMatures => *player.2 += Money(100),
-                    board::CommunityChestCard::IncomeTaxRefund => *player.2 += Money(20),
+                    board::CommunityChestCard::HolidayFundMatures => {
+                        *player.2 += Money(100);
+                        info!(
+                            "Player {:?} received $100 from their holiday fund (current money: ${})",
+                            player.0, player.2.0
+                        );
+                    }
+                    board::CommunityChestCard::IncomeTaxRefund => {
+                        *player.2 += Money(20);
+                        info!(
+                            "Player {:?} received $20 from their income tax refund (current money: ${})",
+                            player.0, player.2.0
+                        );
+                    }
                     board::CommunityChestCard::Birthday => todo!(),
-                    board::CommunityChestCard::LifeInsuranceMatures => todo!(),
-                    board::CommunityChestCard::HospitalFees => todo!(),
-                    board::CommunityChestCard::SchoolFees => todo!(),
-                    board::CommunityChestCard::ConsultancyFee => todo!(),
+                    board::CommunityChestCard::LifeInsuranceMatures => {
+                        *player.2 += Money(100);
+                        info!(
+                            "Player {:?} received $20 from their life insurance (current money: ${})",
+                            player.0, player.2.0
+                        );
+                    }
+                    board::CommunityChestCard::HospitalFees => {
+                        let fine = 50;
+                        // Pay and add fine to free parking
+                        if player.2 .0 >= fine {
+                            let free_parking = &mut board.0[positions::FREE_PARKING];
+                            if let Space::FreeParking(amount) = free_parking {
+                                *amount += fine;
+                            }
+                            *player.2 -= Money(fine);
+                            info!(
+                                "Player {:?} paid $50 for hospital fees (current money: ${})",
+                                player.0, player.2 .0
+                            );
+                        } else {
+                            Self::handle_not_enough_money(player);
+                        }
+                    }
+                    board::CommunityChestCard::SchoolFees => {
+                        let fine = 50;
+                        // Pay and add fine to free parking
+                        if player.2 .0 >= fine {
+                            let free_parking = &mut board.0[positions::FREE_PARKING];
+                            if let Space::FreeParking(amount) = free_parking {
+                                *amount += fine;
+                            }
+                            *player.2 -= Money(fine);
+                            info!(
+                                "Player {:?} paid $50 for school fees (current money: ${})",
+                                player.0, player.2 .0
+                            );
+                        } else {
+                            Self::handle_not_enough_money(player);
+                        }
+                    }
+                    board::CommunityChestCard::ConsultancyFee => {
+                        *player.2 += Money(25);
+                        info!(
+                            "Player {:?} received $25 as a consultancy fee (current money: ${})",
+                            player.0, player.2 .0
+                        );
+                    }
                     board::CommunityChestCard::StreetRepairs => todo!(),
-                    board::CommunityChestCard::BeautyContest => todo!(),
-                    board::CommunityChestCard::Inherit => todo!(),
+                    board::CommunityChestCard::BeautyContest => {
+                        *player.2 += Money(10);
+                        info!(
+                            "Player {:?} received $10 for 2nd place in a beauty contest (current money: ${})",
+                            player.0, player.2.0
+                        );
+                    }
+                    board::CommunityChestCard::Inherit => {
+                        *player.2 += Money(100);
+                        info!(
+                            "Player {:?} inherited $100 (current money: ${})",
+                            player.0, player.2 .0
+                        );
+                    }
                 }
             }
             board::Space::Tax(fine) => {
@@ -204,6 +302,10 @@ impl Game {
                         *amount += fine;
                     }
                     *player.2 -= Money(fine);
+                    info!(
+                        "Player {:?} paid ${} in taxes (current money: ${})",
+                        player.0, fine, player.2 .0
+                    );
                 } else {
                     Self::handle_not_enough_money(player);
                 }
@@ -211,7 +313,14 @@ impl Game {
             board::Space::Chance => {
                 let card = draw_chance_card(chance_cards);
                 match card {
-                    board::ChanceCard::AdvanceToGo => todo!(),
+                    board::ChanceCard::AdvanceToGo => {
+                        *player.3 = Position(positions::GO);
+                        *player.2 += Money(200);
+                        info!(
+                            "Player {:?} passed go and collected $200 (current money: ${})",
+                            player.0, player.2 .0
+                        );
+                    }
                     board::ChanceCard::AdvanceToIllinois => todo!(),
                     board::ChanceCard::AdvanceToStCharlesPlace => todo!(),
                     board::ChanceCard::AdvanceToNearestUtility => todo!(),
