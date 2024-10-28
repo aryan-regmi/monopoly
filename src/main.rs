@@ -31,5 +31,6 @@ fn setup_log() -> (WorkerGuard, WorkerGuard) {
 fn main() {
     let (_g1, _g2) = setup_log();
 
-    Game::new(4);
+    let mut game = Game::new(4);
+    game.start();
 }
