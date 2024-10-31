@@ -49,6 +49,8 @@ impl Game {
             ));
         }
 
+        // TODO: Determine player order
+
         Self { ecs, running: true }
     }
 
@@ -60,6 +62,8 @@ impl Game {
             self.ecs.run_system(game_loop);
         }
     }
+
+    fn roll_for_player_order() {}
 
     /// Runs the game in a loop until a winner is determined.
     fn game_loop(
@@ -116,6 +120,8 @@ impl Game {
                     *player.4 = InJail(true);
                 }
             }
+
+            // End if only 1 player remains
         }
     }
 
@@ -317,13 +323,73 @@ impl Game {
                         *player.3 = Position(positions::GO);
                         *player.2 += Money(200);
                         info!(
-                            "Player {:?} passed go and collected $200 (current money: ${})",
+                            "Player {:?} advanced to `Go` and collected $200 (current money: ${})",
                             player.0, player.2 .0
                         );
                     }
-                    board::ChanceCard::AdvanceToIllinois => todo!(),
-                    board::ChanceCard::AdvanceToStCharlesPlace => todo!(),
-                    board::ChanceCard::AdvanceToNearestUtility => todo!(),
+                    board::ChanceCard::AdvanceToIllinois => {
+                        // Handle if player passes Go
+                        if player.3 .0 > positions::ILLINOIS_AVENUE {
+                            *player.2 += Money(200);
+                            info!(
+                                "Player {:?} passed `Go` and collected $200 (current money: ${})",
+                                player.0, player.2 .0
+                            );
+                        }
+
+                        *player.3 = Position(positions::ILLINOIS_AVENUE);
+                        info!("Player {:?} advanced to `Illinois Avenue`", player.0);
+
+                        // TODO: Handle property
+                        let illinois_avenue = &mut board.0[positions::ILLINOIS_AVENUE];
+                        if let Space::Property(property) = illinois_avenue {
+                            if property.owner.is_none() {
+                                // TODO: Can buy/auction
+                            } else {
+                                // TODO: Pay owner
+                            }
+                        }
+                    }
+                    board::ChanceCard::AdvanceToStCharlesPlace => {
+                        // Handle if player passes Go
+                        if player.3 .0 > positions::ST_CHARLES_PLACE {
+                            *player.2 += Money(200);
+                            info!(
+                                "Player {:?} passed `Go` and collected $200 (current money: ${})",
+                                player.0, player.2 .0
+                            );
+                        }
+
+                        *player.3 = Position(positions::ST_CHARLES_PLACE);
+                        info!("Player {:?} advanced to `St. Charles Place`", player.0);
+
+                        // TODO: Handle property
+                    }
+                    board::ChanceCard::AdvanceToNearestUtility => {
+                        // TODO: List all utilities
+                        //  - Sub player's positions, and move to smallest (non-negative) one
+                        let utilities = [positions::ELECTRIC_COMPANY, positions::WATER_WORKS];
+                        let player_pos = player.3 .0;
+
+                        // Find closest utility
+                        let nearest = utilities
+                            .iter()
+                            .filter_map(|u| {
+                                let distance = *u as isize - player_pos as isize;
+                                if distance >= 0 {
+                                    Some(u)
+                                } else {
+                                    None
+                                }
+                            })
+                            .min()
+                            .expect("Unable to find nearest utility");
+
+                        // Move player to nearest utility
+                        *player.3 = Position(*nearest);
+
+                        // TODO: Buy if available, pay 10x dice otherwise
+                    }
                     board::ChanceCard::AdvanceToNearestRailroad => todo!(),
                     board::ChanceCard::Dividend => todo!(),
                     board::ChanceCard::GetOutOfJailFree => todo!(),
@@ -351,6 +417,8 @@ impl Game {
                 // TODO: Implement
             }
         }
+
+        // TODO: Handle bankruptcy
     }
 
     fn handle_not_enough_money(

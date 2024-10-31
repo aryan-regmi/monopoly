@@ -1,7 +1,10 @@
 use bevy_ecs::prelude::*;
 use rand::Rng;
 
-use crate::utils::{NUM_CHANCE, NUM_COMMUNITY_CHEST, NUM_SPACES};
+use crate::{
+    player::Id,
+    utils::{NUM_CHANCE, NUM_COMMUNITY_CHEST, NUM_SPACES},
+};
 
 /// Represents the actual board.
 #[derive(Resource)]
@@ -27,6 +30,7 @@ impl Default for Board {
                     house4: 160,
                     hotel: 250,
                 },
+                owner: None,
             }));
             board.push(Space::CommunityChest);
             board.push(Space::Property(Property {
@@ -44,6 +48,7 @@ impl Default for Board {
                     house4: 320,
                     hotel: 450,
                 },
+                owner: None,
             }));
             board.push(Space::Tax(200)); // Income tax
             board.push(Space::Property(Property {
@@ -58,6 +63,7 @@ impl Default for Board {
                     owned3: 100,
                     owned4: 200,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Oriental Avenue".into(),
@@ -74,6 +80,7 @@ impl Default for Board {
                     house4: 400,
                     hotel: 550,
                 },
+                owner: None,
             }));
             board.push(Space::Chance);
             board.push(Space::Property(Property {
@@ -91,6 +98,7 @@ impl Default for Board {
                     house4: 400,
                     hotel: 550,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Connecticut Avenue".into(),
@@ -107,6 +115,7 @@ impl Default for Board {
                     house4: 450,
                     hotel: 600,
                 },
+                owner: None,
             }));
             board.push(Space::Jail);
             board.push(Space::Property(Property {
@@ -124,6 +133,7 @@ impl Default for Board {
                     house4: 625,
                     hotel: 750,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Electric Company".into(),
@@ -135,6 +145,7 @@ impl Default for Board {
                     base: 4,
                     monopoly: 10,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "States Avenue".into(),
@@ -151,6 +162,7 @@ impl Default for Board {
                     house4: 625,
                     hotel: 750,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Virginia Avenue".into(),
@@ -167,6 +179,7 @@ impl Default for Board {
                     house4: 700,
                     hotel: 900,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Pennsylvania Railroad".into(),
@@ -180,6 +193,7 @@ impl Default for Board {
                     owned3: 100,
                     owned4: 200,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "St. James Place".into(),
@@ -196,6 +210,7 @@ impl Default for Board {
                     house4: 750,
                     hotel: 950,
                 },
+                owner: None,
             }));
             board.push(Space::CommunityChest);
             board.push(Space::Property(Property {
@@ -213,6 +228,7 @@ impl Default for Board {
                     house4: 750,
                     hotel: 950,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "New York Avenue".into(),
@@ -229,6 +245,7 @@ impl Default for Board {
                     house4: 800,
                     hotel: 1000,
                 },
+                owner: None,
             }));
             board.push(Space::FreeParking(0));
             board.push(Space::Property(Property {
@@ -246,6 +263,7 @@ impl Default for Board {
                     house4: 875,
                     hotel: 1050,
                 },
+                owner: None,
             }));
             board.push(Space::Chance);
             board.push(Space::Property(Property {
@@ -263,6 +281,7 @@ impl Default for Board {
                     house4: 875,
                     hotel: 1050,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Illinois Avenue".into(),
@@ -279,6 +298,7 @@ impl Default for Board {
                     house4: 925,
                     hotel: 1100,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "B. & O. Railroad".into(),
@@ -292,6 +312,7 @@ impl Default for Board {
                     owned3: 100,
                     owned4: 200,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Atlantic Avenue".into(),
@@ -308,6 +329,7 @@ impl Default for Board {
                     house4: 975,
                     hotel: 1150,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Ventnor Avenue".into(),
@@ -324,6 +346,7 @@ impl Default for Board {
                     house4: 975,
                     hotel: 1150,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Water Works".into(),
@@ -335,6 +358,7 @@ impl Default for Board {
                     base: 4,
                     monopoly: 10,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Marvin Gardens".into(),
@@ -351,6 +375,7 @@ impl Default for Board {
                     house4: 1025,
                     hotel: 1200,
                 },
+                owner: None,
             }));
             board.push(Space::GoToJail);
             board.push(Space::Property(Property {
@@ -368,6 +393,7 @@ impl Default for Board {
                     house4: 1100,
                     hotel: 1275,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "North Carolina Avenue".into(),
@@ -384,6 +410,7 @@ impl Default for Board {
                     house4: 1100,
                     hotel: 1275,
                 },
+                owner: None,
             }));
             board.push(Space::CommunityChest);
             board.push(Space::Property(Property {
@@ -401,6 +428,7 @@ impl Default for Board {
                     house4: 1200,
                     hotel: 1400,
                 },
+                owner: None,
             }));
             board.push(Space::Property(Property {
                 name: "Short Line".into(),
@@ -414,6 +442,7 @@ impl Default for Board {
                     owned3: 100,
                     owned4: 200,
                 },
+                owner: None,
             }));
             board.push(Space::Chance);
             board.push(Space::Property(Property {
@@ -431,6 +460,7 @@ impl Default for Board {
                     house4: 1300,
                     hotel: 1500,
                 },
+                owner: None,
             }));
             board.push(Space::Tax(100)); // Luxury tax
             board.push(Space::Property(Property {
@@ -448,6 +478,7 @@ impl Default for Board {
                     house4: 1700,
                     hotel: 2000,
                 },
+                owner: None,
             }));
         }
         Self(board)
@@ -510,6 +541,11 @@ pub struct Property {
 
     /// The various amounts players must pay for landing on this property.
     pub rent: Rent,
+
+    /// The owner of the property.
+    ///
+    /// `None` if it hasn't been bought by anyone yet.
+    pub owner: Option<Id>,
 }
 
 impl std::fmt::Debug for Property {

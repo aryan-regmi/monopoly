@@ -4,8 +4,12 @@ use crate::board::Property;
 use bevy_ecs::prelude::*;
 
 /// A unique identifier.
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct Id(pub(crate) usize);
+
+/// Marks the player whose turn it currently is.
+#[derive(Component)]
+pub struct CurrentPlayer;
 
 impl std::fmt::Debug for Id {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
