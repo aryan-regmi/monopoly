@@ -1,10 +1,7 @@
 use bevy_ecs::prelude::*;
 use rand::Rng;
 
-use crate::{
-    player::Id,
-    utils::{NUM_CHANCE, NUM_COMMUNITY_CHEST, NUM_SPACES},
-};
+use crate::utils::{NUM_CHANCE, NUM_COMMUNITY_CHEST, NUM_SPACES};
 
 /// Represents the actual board.
 #[derive(Resource)]
@@ -545,7 +542,7 @@ pub struct Property {
     /// The owner of the property.
     ///
     /// `None` if it hasn't been bought by anyone yet.
-    pub owner: Option<Id>,
+    pub owner: Option<Entity>,
 }
 
 impl std::fmt::Debug for Property {
